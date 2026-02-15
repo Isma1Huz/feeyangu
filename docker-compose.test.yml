@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - APP_ENV=testing
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=:memory:
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: tail -f /dev/null
+
+  database:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=feeyangu_test
+      - MYSQL_USER=test_user
+      - MYSQL_PASSWORD=test_password
+      - MYSQL_ROOT_PASSWORD=root_password
+    ports:
+      - "3307:3306"
