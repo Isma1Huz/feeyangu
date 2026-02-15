@@ -17,8 +17,6 @@ class PaymentMethodController extends Controller
     public function __construct(PaymentMethodService $paymentMethodService)
     {
         $this->paymentMethodService = $paymentMethodService;
-        $this->middleware('auth');
-        $this->middleware('role:school-admin');
     }
 
     /**

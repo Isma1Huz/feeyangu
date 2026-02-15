@@ -17,8 +17,6 @@ class GradeController extends Controller
     public function __construct(GradeService $gradeService)
     {
         $this->gradeService = $gradeService;
-        $this->middleware('auth');
-        $this->middleware('role:school-admin');
     }
 
     private function getSchool(): School

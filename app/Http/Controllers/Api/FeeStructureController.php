@@ -18,8 +18,6 @@ class FeeStructureController extends Controller
     public function __construct(FeeStructureService $feeStructureService)
     {
         $this->feeStructureService = $feeStructureService;
-        $this->middleware('auth');
-        $this->middleware('role:school-admin');
     }
 
     /**

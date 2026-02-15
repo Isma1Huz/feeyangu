@@ -17,7 +17,6 @@ class StudentFeeController extends Controller
     public function __construct(StudentFeeService $studentFeeService)
     {
         $this->studentFeeService = $studentFeeService;
-        $this->middleware('auth:sanctum');
     }
 
     /**

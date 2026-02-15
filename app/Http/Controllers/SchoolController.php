@@ -16,8 +16,6 @@ class SchoolController extends Controller
     public function __construct(SchoolService $schoolService)
     {
         $this->schoolService = $schoolService;
-        $this->middleware('auth');
-        $this->middleware('role:super-admin');
     }
 
     /**

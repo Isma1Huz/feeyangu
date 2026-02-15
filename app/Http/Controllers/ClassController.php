@@ -18,8 +18,6 @@ class ClassController extends Controller
     public function __construct(ClassService $classService)
     {
         $this->classService = $classService;
-        $this->middleware('auth');
-        $this->middleware('role:school-admin');
     }
 
     public function index(Grade $grade): Response

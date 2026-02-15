@@ -17,8 +17,6 @@ class TermController extends Controller
     public function __construct(TermService $termService)
     {
         $this->termService = $termService;
-        $this->middleware('auth');
-        $this->middleware('role:school-admin');
     }
 
     private function getSchool(): School

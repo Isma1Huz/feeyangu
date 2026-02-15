@@ -18,7 +18,6 @@ class PaymentController extends Controller
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
-        $this->middleware('auth:sanctum');
     }
 
     /**

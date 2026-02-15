@@ -10,26 +10,23 @@ class TermFactory extends Factory
 {
     protected $model = Term::class;
     
-    private static $termCounter = [];
+    private static $globalCounter = 0;
 
     public function definition()
     {
         $schoolId = School::factory()->create()->id;
         
-        if (!isset(self::$termCounter[$schoolId])) {
-            self::$termCounter[$schoolId] = 0;
-        }
-        
-        $termNumber = (++self::$termCounter[$schoolId] % 3) + 1;
-        $year = now()->year + intdiv(self::$termCounter[$schoolId], 3);
+        $counter = ++self::$globalCounter;
+        $termNumber = ($counter % 3) + 1;
+        $year = now()->year + intdiv($counter - 1, 3);
 
         return [
             'school_id' => $schoolId,
             'name' => "Term {$termNumber}",
             'year' => $year,
             'term_number' => $termNumber,
-            'start_date' => now()->subMonths(6),
-            'end_date' => now()->addMonths(6),
+            'start_date' => now()->subMonths(6)->addDays($counter),
+            'end_date' => now()->addMonths(6)->addDays($counter),
             'is_active' => true,
         ];
     }

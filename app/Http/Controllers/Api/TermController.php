@@ -16,7 +16,6 @@ class TermController extends Controller
     public function __construct(TermService $termService)
     {
         $this->termService = $termService;
-        $this->middleware('auth:sanctum');
     }
 
     /**

@@ -42,6 +42,16 @@ class School extends Model
         return $this->hasMany(Student::class);
     }
 
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
+
+    public function terms(): HasMany
+    {
+        return $this->hasMany(Term::class);
+    }
+
     public function feeStructures(): HasMany
     {
         return $this->hasMany(FeeStructure::class);

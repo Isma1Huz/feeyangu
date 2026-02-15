@@ -17,8 +17,6 @@ class ParentPaymentController extends Controller
     public function __construct(PaymentService $paymentService)
     {
         $this->paymentService = $paymentService;
-        $this->middleware('auth');
-        $this->middleware('role:parent');
     }
 
     /**
