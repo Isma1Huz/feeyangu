@@ -18,7 +18,6 @@ class ClassController extends Controller
     public function __construct(ClassService $classService)
     {
         $this->classService = $classService;
-        $this->middleware('auth:sanctum');
     }
 
     /**

@@ -49,7 +49,7 @@ class FeeStructureController extends Controller
         $grades = $this->feeStructureService->getAvailableGrades($school);
         $terms = $this->feeStructureService->getAvailableTerms($school);
 
-        return Inertia::render('school/FeeStructures/Index', [
+        return Inertia::render('School/FeeStructures/Index', [
             'feeStructures' => $feeStructures,
             'filters' => $filters,
             'grades' => $grades,
@@ -68,7 +68,7 @@ class FeeStructureController extends Controller
         $grades = $this->feeStructureService->getAvailableGrades($school);
         $terms = $this->feeStructureService->getAvailableTerms($school);
 
-        return Inertia::render('school/FeeStructures/Create', [
+        return Inertia::render('School/FeeStructures/Create', [
             'grades' => $grades,
             'terms' => $terms,
         ]);
@@ -116,7 +116,7 @@ class FeeStructureController extends Controller
         $feeStructureData = $this->feeStructureService->getFeeStructureById($feeStructure->id);
         $statistics = $this->feeStructureService->getFeeStructureStatistics($feeStructure);
 
-        return Inertia::render('school/FeeStructures/Show', [
+        return Inertia::render('School/FeeStructures/Show', [
             'feeStructure' => $feeStructureData,
             'statistics' => $statistics,
         ]);
@@ -134,7 +134,7 @@ class FeeStructureController extends Controller
         $grades = $this->feeStructureService->getAvailableGrades($school);
         $terms = $this->feeStructureService->getAvailableTerms($school);
 
-        return Inertia::render('school/FeeStructures/Edit', [
+        return Inertia::render('School/FeeStructures/Edit', [
             'feeStructure' => $feeStructure,
             'grades' => $grades,
             'terms' => $terms,

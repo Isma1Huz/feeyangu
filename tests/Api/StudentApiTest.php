@@ -6,6 +6,7 @@ use App\Models\School;
 use App\Models\Student;
 use App\Models\User;
 use Tests\TestCase;
+use Laravel\Sanctum\Sanctum;
 
 class StudentApiTest extends TestCase
 {
@@ -28,7 +29,7 @@ class StudentApiTest extends TestCase
     {
         Student::factory(5)->create(['school_id' => $this->school->id]);
 
-        $response = $this->actingAs($this->schoolAdmin, 'api')  // FIXED: Use 'api' guard
+        $response = $this->actingAs($this->schoolAdmin, 'sanctum')
             ->getJson('/api/school/students');
 
         $response->assertStatus(200);
@@ -48,13 +49,13 @@ class StudentApiTest extends TestCase
      */
     public function test_can_create_student_via_api()
     {
-        $response = $this->actingAs($this->schoolAdmin, 'api')  // FIXED: Use 'api' guard
+        $response = $this->actingAs($this->schoolAdmin, 'sanctum')
             ->postJson('/api/school/students', [
                 'admission_no' => 'ADM001',
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'email' => 'john@test.com',
-                'grade' => 'Form 1',
+                'grade_id' => \App\Models\Grade::factory()->create(['school_id' => $this->school->id])->id,
             ]);
 
         $response->assertStatus(201);
@@ -76,7 +77,7 @@ class StudentApiTest extends TestCase
     {
         $student = Student::factory()->create(['school_id' => $this->school->id]);
 
-        $response = $this->actingAs($this->schoolAdmin, 'api')  // FIXED: Use 'api' guard
+        $response = $this->actingAs($this->schoolAdmin, 'sanctum')
             ->getJson("/api/school/students/{$student->id}");
 
         $response->assertStatus(200);
@@ -98,12 +99,12 @@ class StudentApiTest extends TestCase
     {
         $student = Student::factory()->create(['school_id' => $this->school->id]);
 
-        $response = $this->actingAs($this->schoolAdmin, 'api')  // FIXED: Use 'api' guard
+        $response = $this->actingAs($this->schoolAdmin, 'sanctum')
             ->putJson("/api/school/students/{$student->id}", [
                 'admission_no' => $student->admission_no,
                 'first_name' => 'Updated',
                 'last_name' => 'Name',
-                'grade' => 'Form 2',
+                'grade_id' => $student->grade_id,
             ]);
 
         $response->assertStatus(200);
@@ -119,7 +120,7 @@ class StudentApiTest extends TestCase
     {
         $student = Student::factory()->create(['school_id' => $this->school->id]);
 
-        $response = $this->actingAs($this->schoolAdmin, 'api')  // FIXED: Use 'api' guard
+        $response = $this->actingAs($this->schoolAdmin, 'sanctum')
             ->deleteJson("/api/school/students/{$student->id}");
 
         $response->assertStatus(200);
@@ -135,7 +136,7 @@ class StudentApiTest extends TestCase
     {
         $response = $this->getJson('/api/school/students');
 
-        $response->assertStatus(404);  // FIXED: Routes don't exist for unauthenticated
+        $response->assertStatus(401);  // ← Unauthorized without token
     }
 
     /**
@@ -149,9 +150,9 @@ class StudentApiTest extends TestCase
 
         $student = Student::factory()->create(['school_id' => $this->school->id]);
 
-        $response = $this->actingAs($otherAdmin, 'api')  // FIXED: Use 'api' guard
+        $response = $this->actingAs($otherAdmin, 'sanctum')
             ->getJson("/api/school/students/{$student->id}");
 
-        $response->assertStatus(404);
+        $response->assertStatus(403);  // ← Forbidden - not 404
     }
 }

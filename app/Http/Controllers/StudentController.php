@@ -49,7 +49,7 @@ class StudentController extends Controller
         $grades = $this->studentService->getSchoolGrades($school);
         $availableParents = $this->studentService->getAvailableParents($school);
 
-        return Inertia::render('school/Students/Index', [
+        return Inertia::render('School/Students/Index', [
             'students' => $students,
             'filters' => $filters,
             'grades' => $grades,
@@ -66,7 +66,7 @@ class StudentController extends Controller
         $grades = $this->studentService->getSchoolGrades($school);
         $availableParents = $this->studentService->getAvailableParents($school);
 
-        return Inertia::render('school/Students/Create', [
+        return Inertia::render('School/Students/Create', [
             'grades' => $grades,
             'availableParents' => $availableParents,
         ]);
@@ -114,7 +114,7 @@ class StudentController extends Controller
         $statistics = $this->studentService->getStudentStatistics($student);
         $availableParents = $this->studentService->getAvailableParents($student->school);
 
-        return Inertia::render('school/Students/Show', [
+        return Inertia::render('School/Students/Show', [
             'student' => $studentData,
             'statistics' => $statistics,
             'availableParents' => $availableParents,
@@ -131,7 +131,7 @@ class StudentController extends Controller
         $grades = $this->studentService->getSchoolGrades($student->school);
         $availableParents = $this->studentService->getAvailableParents($student->school);
 
-        return Inertia::render('school/Students/Edit', [
+        return Inertia::render('School/Students/Edit', [
             'student' => $student,
             'grades' => $grades,
             'availableParents' => $availableParents,
@@ -261,7 +261,7 @@ class StudentController extends Controller
         $studentData = $this->studentService->getStudentById($student->id);
         $statistics = $this->studentService->getStudentStatistics($student);
 
-        return Inertia::render('school/Students/Fees', [
+        return Inertia::render('School/Students/Fees', [
             'student' => $studentData,
             'statistics' => $statistics,
         ]);

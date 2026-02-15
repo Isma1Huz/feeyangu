@@ -47,7 +47,7 @@ class PaymentController extends Controller
 
         $payments = $this->paymentService->getSchoolPayments($school, 15, $filters);
 
-        return Inertia::render('school/Payments/Index', [
+        return Inertia::render('School/Payments/Index', [
             'payments' => $payments,
             'filters' => $filters,
         ]);
@@ -62,7 +62,7 @@ class PaymentController extends Controller
 
         $paymentData = $this->paymentService->getPaymentById($payment->id);
 
-        return Inertia::render('school/Payments/Show', [
+        return Inertia::render('School/Payments/Show', [
             'payment' => $paymentData,
         ]);
     }

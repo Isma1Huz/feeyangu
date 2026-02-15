@@ -42,7 +42,7 @@ class TermController extends Controller
         $terms = $this->termService->getSchoolTerms($school, 15, $filters);
         $years = $this->termService->getActiveYears($school);
 
-        return Inertia::render('school/Terms/Index', [
+        return Inertia::render('School/Terms/Index', [
             'terms' => $terms,
             'filters' => $filters,
             'years' => $years,
@@ -53,7 +53,7 @@ class TermController extends Controller
     {
         $this->authorize('manage students');
 
-        return Inertia::render('school/Terms/Create');
+        return Inertia::render('School/Terms/Create');
     }
 
     public function store(Request $request)
@@ -90,7 +90,7 @@ class TermController extends Controller
         $termData = $this->termService->getTermById($term->id);
         $statistics = $this->termService->getTermStatistics($term);
 
-        return Inertia::render('school/Terms/Show', [
+        return Inertia::render('School/Terms/Show', [
             'term' => $termData,
             'statistics' => $statistics,
         ]);

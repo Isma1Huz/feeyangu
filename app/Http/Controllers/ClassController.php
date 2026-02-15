@@ -30,7 +30,7 @@ class ClassController extends Controller
         
         $classes = $this->classService->getGradeClasses($grade, 15, $filters);
 
-        return Inertia::render('school/Classes/Index', [
+        return Inertia::render('School/Classes/Index', [
             'grade' => $grade,
             'classes' => $classes,
             'filters' => $filters,
@@ -44,7 +44,7 @@ class ClassController extends Controller
         $teachers = User::where('school_id', Auth::user()->school_id)
             ->get(['id', 'name']);
 
-        return Inertia::render('school/Classes/Create', [
+        return Inertia::render('School/Classes/Create', [
             'grade' => $grade,
             'teachers' => $teachers,
         ]);
@@ -81,7 +81,7 @@ class ClassController extends Controller
         $classData = $this->classService->getClassById($class->id);
         $statistics = $this->classService->getClassStatistics($class);
 
-        return Inertia::render('school/Classes/Show', [
+        return Inertia::render('School/Classes/Show', [
             'grade' => $grade,
             'class' => $classData,
             'statistics' => $statistics,
@@ -95,7 +95,7 @@ class ClassController extends Controller
         $teachers = User::where('school_id', Auth::user()->school_id)
             ->get(['id', 'name']);
 
-        return Inertia::render('school/Classes/Edit', [
+        return Inertia::render('School/Classes/Edit', [
             'grade' => $grade,
             'class' => $class,
             'teachers' => $teachers,

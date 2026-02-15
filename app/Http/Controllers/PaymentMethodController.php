@@ -45,7 +45,7 @@ class PaymentMethodController extends Controller
         $school = $this->getSchool();
         $paymentMethods = $this->paymentMethodService->getPaymentMethods($school);
 
-        return Inertia::render('school/PaymentMethods/Index', [
+        return Inertia::render('School/PaymentMethods/Index', [
             'paymentMethods' => $paymentMethods,
         ]);
     }
@@ -66,7 +66,7 @@ class PaymentMethodController extends Controller
             'paypal' => 'PayPal',
         ];
 
-        return Inertia::render('school/PaymentMethods/Create', [
+        return Inertia::render('School/PaymentMethods/Create', [
             'methodTypes' => $methodTypes,
         ]);
     }
@@ -118,7 +118,7 @@ class PaymentMethodController extends Controller
             'paypal' => 'PayPal',
         ];
 
-        return Inertia::render('school/PaymentMethods/Edit', [
+        return Inertia::render('School/PaymentMethods/Edit', [
             'paymentMethod' => $paymentMethod,
             'methodTypes' => $methodTypes,
         ]);

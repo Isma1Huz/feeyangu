@@ -10,23 +10,18 @@ class TermFactory extends Factory
 {
     protected $model = Term::class;
     
-    private static $termCounter = [];
+    private static $termCounter = 0;
 
     public function definition()
     {
-        $schoolId = School::factory()->create()->id;
-        
-        if (!isset(self::$termCounter[$schoolId])) {
-            self::$termCounter[$schoolId] = 0;
-        }
-        
-        $termNumber = (++self::$termCounter[$schoolId] % 3) + 1;
-        $year = now()->year + intdiv(self::$termCounter[$schoolId], 3);
+        self::$termCounter++;
+        $termNumber = ((self::$termCounter - 1) % 3) + 1;
+        $year = now()->year + intdiv(self::$termCounter - 1, 3);
 
         return [
-            'school_id' => $schoolId,
+            'school_id' => School::factory(),
             'name' => "Term {$termNumber}",
-            'year' => $year,
+            'year' => $year,  // ← DIFFERENT year for each term_number
             'term_number' => $termNumber,
             'start_date' => now()->subMonths(6),
             'end_date' => now()->addMonths(6),

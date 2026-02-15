@@ -84,7 +84,7 @@ class ParentPaymentController extends Controller
      */
     public function confirmation(Request $request): Response
     {
-        return Inertia::render('parent/Payments/Confirmation', [
+        return Inertia::render('Parent/Payments/Confirmation', [
             'message' => 'Your payment has been submitted successfully. The school will verify and confirm your payment shortly.',
         ]);
     }
@@ -103,7 +103,7 @@ class ParentPaymentController extends Controller
 
         $payments = $this->paymentService->getStudentPaymentHistory($student->id, 10);
 
-        return Inertia::render('parent/Payments/History', [
+        return Inertia::render('Parent/Payments/History', [
             'student' => $student,
             'payments' => $payments,
         ]);

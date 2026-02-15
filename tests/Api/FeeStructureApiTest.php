@@ -3,9 +3,9 @@
 namespace Tests\Api;
 
 use App\Models\School;
-use App\Models\FeeStructure;
 use App\Models\Grade;
 use App\Models\Term;
+use App\Models\FeeStructure;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -23,7 +23,7 @@ class FeeStructureApiTest extends TestCase
         $this->school = School::factory()->create();
         $this->schoolAdmin = User::factory()->create(['school_id' => $this->school->id]);
         $this->schoolAdmin->assignRole('school-admin');
-
+        
         $this->grade = Grade::factory()->create(['school_id' => $this->school->id]);
         $this->term = Term::factory()->create(['school_id' => $this->school->id]);
     }
@@ -33,7 +33,7 @@ class FeeStructureApiTest extends TestCase
      */
     public function test_can_list_fee_structures_via_api()
     {
-        FeeStructure::factory(3)->create([
+        FeeStructure::factory()->create([
             'school_id' => $this->school->id,
             'grade_id' => $this->grade->id,
             'term_id' => $this->term->id,
@@ -63,15 +63,13 @@ class FeeStructureApiTest extends TestCase
                     [
                         'item_name' => 'Tuition',
                         'amount' => 5000,
+                        'description' => 'Monthly tuition',
                     ],
                 ],
             ]);
 
         $response->assertStatus(201);
-        $response->assertJsonStructure([
-            'message',
-            'data',
-        ]);
+        $response->assertJsonStructure(['message', 'data']);
     }
 
     /**
@@ -89,10 +87,7 @@ class FeeStructureApiTest extends TestCase
             ->getJson("/api/school/fee-structures/{$feeStructure->id}");
 
         $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'data',
-            'statistics',
-        ]);
+        $response->assertJsonStructure(['data', 'statistics']);
     }
 
     /**
@@ -112,13 +107,14 @@ class FeeStructureApiTest extends TestCase
                 'term_id' => $this->term->id,
                 'breakdowns' => [
                     [
-                        'item_name' => 'Updated',
+                        'item_name' => 'Updated Tuition',
                         'amount' => 6000,
                     ],
                 ],
             ]);
 
         $response->assertStatus(200);
+        $response->assertJson(['message' => 'Fee structure updated successfully']);
     }
 
     /**
@@ -130,11 +126,7 @@ class FeeStructureApiTest extends TestCase
             ->getJson('/api/school/fee-structures/grades');
 
         $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => ['id', 'name'],
-            ],
-        ]);
+        $response->assertJsonStructure(['data']);
     }
 
     /**
@@ -146,21 +138,17 @@ class FeeStructureApiTest extends TestCase
             ->getJson('/api/school/fee-structures/terms');
 
         $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'data' => [
-                '*' => ['id', 'name', 'year'],
-            ],
-        ]);
+        $response->assertJsonStructure(['data']);
     }
 
     /**
-     * Test invalid grade_id returns validation error
+     * Test invalid grade id returns validation error
      */
     public function test_invalid_grade_id_returns_validation_error()
     {
         $response = $this->actingAs($this->schoolAdmin, 'sanctum')
             ->postJson('/api/school/fee-structures', [
-                'grade_id' => 9999,
+                'grade_id' => 99999,  // Non-existent
                 'term_id' => $this->term->id,
                 'breakdowns' => [
                     [

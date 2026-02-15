@@ -3,12 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Payment;
-use App\Models\StudentFee;
-use App\Models\Student;
-use App\Models\FeeStructure;
 use App\Models\School;
-use App\Models\Grade;
-use App\Models\Term;
+use App\Models\StudentFee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentFactory extends Factory
@@ -18,23 +14,7 @@ class PaymentFactory extends Factory
     public function definition()
     {
         $school = School::factory()->create();
-        $grade = Grade::factory()->create(['school_id' => $school->id]);
-        $term = Term::factory()->create(['school_id' => $school->id]);
-        $student = Student::factory()->create(['school_id' => $school->id, 'grade_id' => $grade->id]);
-        $feeStructure = FeeStructure::factory()->create([
-            'school_id' => $school->id,
-            'grade_id' => $grade->id,
-            'term_id' => $term->id,
-        ]);
-        
-        $studentFee = StudentFee::create([
-            'student_id' => $student->id,
-            'fee_structure_id' => $feeStructure->id,
-            'amount_due' => 10000,
-            'amount_paid' => 0,
-            'balance' => 10000,
-            'status' => 'unpaid',
-        ]);
+        $studentFee = StudentFee::factory()->create(['school_id' => $school->id]);
 
         return [
             'school_id' => $school->id,

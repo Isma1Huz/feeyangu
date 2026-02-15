@@ -3,8 +3,6 @@
 namespace Tests\Unit\Models;
 
 use App\Models\School;
-use App\Models\Grade;
-use App\Models\Term;
 use App\Models\Student;
 use Tests\TestCase;
 
@@ -22,7 +20,7 @@ class SchoolTest extends TestCase
             'email' => 'school@test.com',
             'owner_id' => null,
             'subscription_status' => 'active',
-            'is_active' => true,  // FIXED: Explicitly set
+            'is_active' => true,
         ]);
 
         $this->assertDatabaseHas('schools', [
@@ -40,7 +38,7 @@ class SchoolTest extends TestCase
         
         Student::factory(5)->create(['school_id' => $school->id]);
 
-        $this->assertCount(5, $school->refresh()->students);
+        $this->assertEquals(5, $school->refresh()->students()->count());
     }
 
     /**
@@ -50,9 +48,18 @@ class SchoolTest extends TestCase
     {
         $school = School::factory()->create();
         
-        Grade::factory(3)->create(['school_id' => $school->id]);
+        // Create grades with unique codes
+        for ($i = 1; $i <= 3; $i++) {
+            \App\Models\Grade::create([
+                'school_id' => $school->id,
+                'name' => "Grade {$i}",
+                'code' => "G{$i}",  // ← UNIQUE code
+                'level' => $i,
+                'is_active' => true,
+            ]);
+        }
 
-        $this->assertCount(3, $school->refresh()->grades);
+        $this->assertEquals(3, $school->refresh()->grades()->count());
     }
 
     /**
@@ -62,9 +69,20 @@ class SchoolTest extends TestCase
     {
         $school = School::factory()->create();
         
-        Term::factory(4)->create(['school_id' => $school->id]);
+        // Create terms with unique year/term_number combinations
+        for ($i = 1; $i <= 3; $i++) {
+            \App\Models\Term::create([
+                'school_id' => $school->id,
+                'name' => "Term {$i}",
+                'year' => now()->year,
+                'term_number' => $i,  // ← UNIQUE term_number
+                'start_date' => now()->subMonths(6),
+                'end_date' => now()->addMonths(6),
+                'is_active' => true,
+            ]);
+        }
 
-        $this->assertCount(4, $school->refresh()->terms);
+        $this->assertEquals(3, $school->refresh()->terms()->count());
     }
 
     /**

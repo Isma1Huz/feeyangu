@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\FeeStructure;
 use App\Models\School;
 use App\Services\FeeStructureService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class FeeStructureController extends Controller
 {
@@ -18,79 +17,46 @@ class FeeStructureController extends Controller
     public function __construct(FeeStructureService $feeStructureService)
     {
         $this->feeStructureService = $feeStructureService;
-        $this->middleware('auth');
-        $this->middleware('role:school-admin');
     }
 
     /**
-     * Get authenticated user's school
+     * List fee structures
      */
-    private function getSchool(): School
+    public function index(Request $request): JsonResponse
     {
+        $this->authorize('view fees');
+
         $school = Auth::user()->school;
-
-        if (!$school) {
-            abort(403, 'School not found');
-        }
-
-        return $school;
-    }
-
-    /**
-     * Display fee structures list
-     */
-    public function index(Request $request): Response
-    {
-        $this->authorize('viewAny', FeeStructure::class);
-
-        $school = $this->getSchool();
         $filters = $request->only(['search', 'grade_id', 'term_id', 'is_active']);
+        $perPage = $request->get('per_page', 15);
 
-        $feeStructures = $this->feeStructureService->getSchoolFeeStructures($school, 15, $filters);
-        $grades = $this->feeStructureService->getAvailableGrades($school);
-        $terms = $this->feeStructureService->getAvailableTerms($school);
+        $feeStructures = $this->feeStructureService->getSchoolFeeStructures($school, $perPage, $filters);
 
-        return Inertia::render('school/FeeStructures/Index', [
-            'feeStructures' => $feeStructures,
-            'filters' => $filters,
-            'grades' => $grades,
-            'terms' => $terms,
-        ]);
-    }
-
-    /**
-     * Show create fee structure form
-     */
-    public function create(): Response
-    {
-        $this->authorize('create', FeeStructure::class);
-
-        $school = $this->getSchool();
-        $grades = $school->students()
-            ->distinct()
-            ->pluck('grade')
-            ->filter()
-            ->sort()
-            ->values()
-            ->toArray();
-
-        return Inertia::render('school/FeeStructures/Create', [
-            'grades' => $grades,
+        return response()->json([
+            'data' => $feeStructures->items(),
+            'pagination' => [
+                'current_page' => $feeStructures->currentPage(),
+                'per_page' => $feeStructures->perPage(),
+                'total' => $feeStructures->total(),
+                'last_page' => $feeStructures->lastPage(),
+            ],
         ]);
     }
 
     /**
      * Store fee structure
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $this->authorize('create', FeeStructure::class);
+        $this->authorize('create fee structure');
+
+        $school = Auth::user()->school;
 
         $validated = $request->validate([
             'grade_id' => 'required|exists:grades,id',
             'term_id' => 'required|exists:terms,id',
-            'period' => 'nullable|string|max:255',
             'due_date' => 'nullable|date',
+            'is_active' => 'boolean',
             'breakdowns' => 'required|array|min:1',
             'breakdowns.*.item_name' => 'required|string|max:255',
             'breakdowns.*.amount' => 'required|numeric|min:0',
@@ -98,68 +64,45 @@ class FeeStructureController extends Controller
         ]);
 
         try {
-            $school = $this->getSchool();
             $feeStructure = $this->feeStructureService->createFeeStructure($school, $validated);
 
-            return redirect()
-                ->route('school.fee-structures.show', $feeStructure)
-                ->with('success', 'Fee structure created successfully');
+            return response()->json([
+                'message' => 'Fee structure created successfully',
+                'data' => $feeStructure,
+            ], 201);
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->withErrors(['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
         }
     }
 
     /**
      * Show fee structure details
      */
-    public function show(FeeStructure $feeStructure): Response
+    public function show(FeeStructure $feeStructure): JsonResponse
     {
-        $this->authorize('view', $feeStructure);
+        $this->authorize('view fees');
 
         $feeStructureData = $this->feeStructureService->getFeeStructureById($feeStructure->id);
         $statistics = $this->feeStructureService->getFeeStructureStatistics($feeStructure);
 
-        return Inertia::render('school/FeeStructures/Show', [
-            'feeStructure' => $feeStructureData,
+        return response()->json([
+            'data' => $feeStructureData,
             'statistics' => $statistics,
-        ]);
-    }
-
-    /**
-     * Show edit fee structure form
-     */
-    public function edit(FeeStructure $feeStructure): Response
-    {
-        $this->authorize('update', $feeStructure);
-
-        $school = $this->getSchool();
-        $grades = $school->students()
-            ->distinct()
-            ->pluck('grade')
-            ->filter()
-            ->sort()
-            ->values()
-            ->toArray();
-
-        return Inertia::render('school/FeeStructures/Edit', [
-            'feeStructure' => $feeStructure,
-            'grades' => $grades,
         ]);
     }
 
     /**
      * Update fee structure
      */
-    public function update(Request $request, FeeStructure $feeStructure)
+    public function update(Request $request, FeeStructure $feeStructure): JsonResponse
     {
-        $this->authorize('update', $feeStructure);
+        $this->authorize('edit fee structure');
 
         $validated = $request->validate([
             'grade_id' => 'required|exists:grades,id',
             'term_id' => 'required|exists:terms,id',
-            'period' => 'nullable|string|max:255',
             'due_date' => 'nullable|date',
             'is_active' => 'boolean',
             'breakdowns' => 'required|array|min:1',
@@ -171,40 +114,89 @@ class FeeStructureController extends Controller
         try {
             $this->feeStructureService->updateFeeStructure($feeStructure, $validated);
 
-            return redirect()
-                ->route('school.fee-structures.show', $feeStructure)
-                ->with('success', 'Fee structure updated successfully');
+            return response()->json([
+                'message' => 'Fee structure updated successfully',
+                'data' => $feeStructure->fresh(),
+            ]);
         } catch (\Exception $e) {
-            return back()
-                ->withInput()
-                ->withErrors(['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
         }
     }
 
     /**
      * Delete fee structure
      */
-    public function destroy(FeeStructure $feeStructure)
+    public function destroy(FeeStructure $feeStructure): JsonResponse
     {
-        $this->authorize('delete', $feeStructure);
+        $this->authorize('delete fee structure');
 
         try {
             $this->feeStructureService->deleteFeeStructure($feeStructure);
 
-            return redirect()
-                ->route('school.fee-structures.index')
-                ->with('success', 'Fee structure deleted successfully');
+            return response()->json([
+                'message' => 'Fee structure deleted successfully',
+            ]);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
         }
     }
 
     /**
-     * Assign fee to selected students
+     * Get statistics
      */
-    public function assignToStudents(Request $request, FeeStructure $feeStructure)
+    public function statistics(FeeStructure $feeStructure): JsonResponse
     {
-        $this->authorize('assign', $feeStructure);
+        $this->authorize('view fees');
+
+        $statistics = $this->feeStructureService->getFeeStructureStatistics($feeStructure);
+
+        return response()->json([
+            'data' => $statistics,
+        ]);
+    }
+
+    /**
+     * Get available grades
+     */
+    public function grades(): JsonResponse
+    {
+        $this->authorize('view fees');
+
+        $school = Auth::user()->school;
+
+        $grades = $this->feeStructureService->getAvailableGrades($school);
+
+        return response()->json([
+            'data' => $grades,
+        ]);
+    }
+
+    /**
+     * Get available terms
+     */
+    public function terms(): JsonResponse
+    {
+        $this->authorize('view fees');
+
+        $school = Auth::user()->school;
+
+        $terms = $this->feeStructureService->getAvailableTerms($school);
+
+        return response()->json([
+            'data' => $terms,
+        ]);
+    }
+
+    /**
+     * Assign fee to students
+     */
+    public function assignToStudents(Request $request, FeeStructure $feeStructure): JsonResponse
+    {
+        $this->authorize('assign fees');
 
         $validated = $request->validate([
             'student_ids' => 'required|array|min:1',
@@ -214,30 +206,33 @@ class FeeStructureController extends Controller
         try {
             $this->feeStructureService->assignFeeToStudents($feeStructure, $validated['student_ids']);
 
-            return back()->with('success', 'Fee assignment job queued. Students will be assigned shortly.');
+            return response()->json([
+                'message' => 'Fee assignment job queued successfully',
+            ]);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
         }
     }
 
     /**
      * Assign fee to entire grade
      */
-    public function assignToGrade(Request $request, FeeStructure $feeStructure)
+    public function assignToGrade(FeeStructure $feeStructure): JsonResponse
     {
-        $this->authorize('assign', $feeStructure);
-
-        $validated = $request->validate([
-            'grade_id' => 'required|exists:grades,id',
-        ]);
+        $this->authorize('assign fees');
 
         try {
-            $this->feeStructureService->assignFeeToGrade($feeStructure, $validated['grade_id']);
+            $this->feeStructureService->assignFeeToGrade($feeStructure);
 
-            return back()->with('success', 'Fee assignment job queued. All students in grade will be assigned shortly.');
+            return response()->json([
+                'message' => 'Fee assignment to grade job queued successfully',
+            ]);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
         }
     }
-
 }

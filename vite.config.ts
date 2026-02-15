@@ -17,7 +17,15 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+        },
+    },
     esbuild: {
         jsx: 'automatic',
     },
 });
+
+
+

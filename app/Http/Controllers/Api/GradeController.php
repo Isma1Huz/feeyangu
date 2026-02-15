@@ -16,7 +16,6 @@ class GradeController extends Controller
     public function __construct(GradeService $gradeService)
     {
         $this->gradeService = $gradeService;
-        $this->middleware('auth:sanctum');
     }
 
     public function index(Request $request): JsonResponse

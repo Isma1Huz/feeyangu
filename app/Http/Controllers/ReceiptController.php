@@ -44,7 +44,7 @@ class ReceiptController extends Controller
 
         $receiptData = $this->receiptService->getReceiptById($receipt->id);
 
-        return Inertia::render('school/Receipts/Show', [
+        return Inertia::render('School/Receipts/Show', [
             'receipt' => $receiptData,
         ]);
     }
@@ -63,7 +63,7 @@ class ReceiptController extends Controller
 
         $receiptData = $this->receiptService->getReceiptById($receipt->id);
 
-        return Inertia::render('parent/Receipts/Show', [
+        return Inertia::render('Parent/Receipts/Show', [
             'receipt' => $receiptData,
         ]);
     }
@@ -104,7 +104,7 @@ class ReceiptController extends Controller
 
         $receipts = $this->receiptService->getSchoolReceipts($school, 15, $filters);
 
-        return Inertia::render('school/Receipts/Index', [
+        return Inertia::render('School/Receipts/Index', [
             'receipts' => $receipts,
             'filters' => $filters,
         ]);
@@ -126,7 +126,7 @@ class ReceiptController extends Controller
 
         $receipts = $this->receiptService->getStudentReceipts($student->id, 10);
 
-        return Inertia::render('parent/Receipts/Index', [
+        return Inertia::render('Parent/Receipts/Index', [
             'student' => $student,
             'receipts' => $receipts,
         ]);
@@ -142,7 +142,7 @@ class ReceiptController extends Controller
         $school = $this->getSchool();
         $templates = ReceiptTemplate::where('school_id', $school->id)->get();
 
-        return Inertia::render('school/ReceiptTemplates/Index', [
+        return Inertia::render('School/ReceiptTemplates/Index', [
             'templates' => $templates,
         ]);
     }
@@ -154,7 +154,7 @@ class ReceiptController extends Controller
     {
         $this->authorize('manage receipt templates');
 
-        return Inertia::render('school/ReceiptTemplates/Create', [
+        return Inertia::render('School/ReceiptTemplates/Create', [
             'defaultHTML' => $this->getDefaultTemplateHTML(),
         ]);
     }

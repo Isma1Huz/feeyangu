@@ -20,15 +20,18 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'phone',
         'school_id',
+        'is_active',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        
     ];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
 
     // Relation: User belongs to a School (for school admin & staff)

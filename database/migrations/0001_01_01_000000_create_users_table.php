@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone')->nullable();
             $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('set null');
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes(); 

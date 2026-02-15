@@ -10,24 +10,18 @@ class GradeFactory extends Factory
 {
     protected $model = Grade::class;
     
-    private static $gradeCounter = [];
+    private static $gradeCounter = 0;
 
     public function definition()
     {
-        $schoolId = School::factory()->create()->id;
-        
-        if (!isset(self::$gradeCounter[$schoolId])) {
-            self::$gradeCounter[$schoolId] = 0;
-        }
-        
-        $counter = ++self::$gradeCounter[$schoolId];
-        $code = 'G' . str_pad($counter, 3, '0', STR_PAD_LEFT);
+        self::$gradeCounter++;
+        $code = 'G' . str_pad(self::$gradeCounter, 3, '0', STR_PAD_LEFT);
 
         return [
-            'school_id' => $schoolId,
+            'school_id' => School::factory(),
             'name' => $this->faker->randomElement(['Grade 1', 'Grade 2', 'Form 1', 'Form 2', 'Form 3']),
-            'code' => $code,
-            'level' => $counter,
+            'code' => $code,  // ← UNIQUE for each factory call
+            'level' => self::$gradeCounter,
             'is_active' => true,
         ];
     }

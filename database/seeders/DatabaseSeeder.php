@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             SchoolThemeSeeder::class,
             PlatformSettingSeeder::class,
+            TestDataSeeder::class,
             NotificationTemplateSeeder::class,
         ]);
     }

@@ -28,7 +28,7 @@ class SchoolController extends Controller
         $filters = $request->only(['search', 'status', 'is_active']);
         $schools = $this->schoolService->getAllSchools(15, $filters);
 
-        return Inertia::render('admin/Schools/Index', [
+        return Inertia::render('Admin/Schools/Index', [
             'schools' => $schools,
             'filters' => $filters,
         ]);
@@ -41,7 +41,7 @@ class SchoolController extends Controller
     {
         $themes = SchoolTheme::all();
 
-        return Inertia::render('admin/Schools/Create', [
+        return Inertia::render('Admin/Schools/Create', [
             'themes' => $themes,
         ]);
     }
@@ -84,7 +84,7 @@ class SchoolController extends Controller
         $customization = $this->schoolService->getSchoolCustomization($school);
         $themes = SchoolTheme::all();
 
-        return Inertia::render('admin/Schools/Show', [
+        return Inertia::render('Admin/Schools/Show', [
             'school' => $schoolData,
             'statistics' => $statistics,
             'paymentMethods' => $paymentMethods,
@@ -102,7 +102,7 @@ class SchoolController extends Controller
 
         $themes = SchoolTheme::all();
 
-        return Inertia::render('admin/Schools/Edit', [
+        return Inertia::render('Admin/Schools/Edit', [
             'school' => $school,
             'themes' => $themes,
         ]);

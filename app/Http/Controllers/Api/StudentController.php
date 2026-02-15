@@ -17,7 +17,6 @@ class StudentController extends Controller
     public function __construct(StudentService $studentService)
     {
         $this->studentService = $studentService;
-        $this->middleware('auth:sanctum');
     }
 
     /**

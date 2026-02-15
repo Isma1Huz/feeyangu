@@ -41,7 +41,7 @@ class GradeController extends Controller
         
         $grades = $this->gradeService->getSchoolGrades($school, 15, $filters);
 
-        return Inertia::render('school/Grades/Index', [
+        return Inertia::render('School/Grades/Index', [
             'grades' => $grades,
             'filters' => $filters,
         ]);
@@ -51,7 +51,7 @@ class GradeController extends Controller
     {
         $this->authorize('manage students');
 
-        return Inertia::render('school/Grades/Create');
+        return Inertia::render('School/Grades/Create');
     }
 
     public function store(Request $request)
@@ -86,7 +86,7 @@ class GradeController extends Controller
         $gradeData = $this->gradeService->getGradeById($grade->id);
         $statistics = $this->gradeService->getGradeStatistics($grade);
 
-        return Inertia::render('school/Grades/Show', [
+        return Inertia::render('School/Grades/Show', [
             'grade' => $gradeData,
             'statistics' => $statistics,
         ]);
@@ -96,7 +96,7 @@ class GradeController extends Controller
     {
         $this->authorize('manage students');
 
-        return Inertia::render('school/Grades/Edit', [
+        return Inertia::render('School/Grades/Edit', [
             'grade' => $grade,
         ]);
     }

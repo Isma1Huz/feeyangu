@@ -17,7 +17,6 @@ class ReceiptController extends Controller
     public function __construct(ReceiptService $receiptService)
     {
         $this->receiptService = $receiptService;
-        $this->middleware('auth:sanctum');
     }
 
     /**
